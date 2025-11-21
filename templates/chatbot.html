@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot - YouTube Sentiment Analyzer{% endblock %}
+
+{% block content %}
+<section class="predict-section">
+    <div class="container">
+        <h1 class="page-title fade-in">AI Assistant</h1>
+        <p class="page-subtitle fade-in">Your personal guide for content creation</p>
+        
+        <div class="chatbot-container" id="chatbot-container">
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chatbot-message bot">
+                    {{ initial_message | safe }}
+                </div>
+            </div>
+            <div class="chatbot-input-form">
+                <input type="text" id="chatInput" placeholder="Type your message here..." autocomplete="off">
+                <button id="chatSendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}
+{% endblock %}

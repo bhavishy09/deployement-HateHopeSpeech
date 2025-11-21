@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Home - YouTube Sentiment Analyzer{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="floating-emoji">💬</div>
+    <div class="floating-emoji">❤️</div>
+    <div class="floating-emoji">✨</div>
+    <div class="floating-emoji">📊</div>
+    <div class="floating-emoji">🎯</div>
+    <div class="hero-content fade-in">
+        <h1 class="hero-title">Hi Influencer!</h1>
+        <p class="hero-motto">Transform YouTube Analytics into Actionable Insights – Track Growth, Spot Hate, Highlight Hope!</p>
+        <p class="hero-subtitle">Track views, likes, subscribers, and unlock AI-driven comment insights to detect hate, boost positivity, and understand your audience deeply — all with built-in chatbot support for instant guidance.</p>
+        <a href="{{ url_for('predict') }}" class="btn btn-primary btn-large">Use Now</a>
+    </div>
+</section>
+
+<section class="uses-section">
+    <div class="container">
+        <h2 class="section-title fade-in">How CommentIQ Helps You</h2>
+        <div class="uses-grid">
+            <div class="use-card fade-in" style="animation-delay: 0.1s">
+                <div class="use-number">01</div>
+                <h3>Detect Hate Speech</h3>
+                <p>Identify negative and harmful comments automatically, helping you maintain a safe and positive community around your content.</p>
+            </div>
+            
+            <div class="use-card fade-in" style="animation-delay: 0.2s">
+                <div class="use-number">02</div>
+                <h3>Promote Positive Engagement</h3>
+                <p>Highlight supportive and encouraging comments to foster meaningful interactions and build stronger connections with your audience.</p>
+            </div>
+            
+            <div class="use-card fade-in" style="animation-delay: 0.3s">
+                <div class="use-number">03</div>
+                <h3>Analyze Comment Trends</h3>
+                <p>Get instant insights into how viewers react to your YouTube videos, helping you understand audience sentiment and improve content strategy.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title fade-in">Why Choose CommentIQ?</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card fade-in" style="animation-delay: 0.1s">
+                <div class="feature-icon">🎯</div>
+                <h3>Accurate Analysis</h3>
+                <p>Our AI model analyzes YouTube comments with high precision to detect positive, neutral, and negative sentiments</p>
+            </div>
+            
+            <div class="feature-card fade-in" style="animation-delay: 0.2s">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Get instant sentiment predictions for any YouTube video in seconds</p>
+            </div>
+            
+            <div class="feature-card fade-in" style="animation-delay: 0.3s">
+                <div class="feature-icon">📊</div>
+                <h3>Track History</h3>
+                <p>View your prediction history and analyze sentiment trends over time in your dashboard</p>
+            </div>
+            
+            <div class="feature-card fade-in" style="animation-delay: 0.4s">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure & Private</h3>
+                <p>Your data is encrypted and stored securely. We respect your privacy</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content fade-in">
+            <h2>Ready to analyze YouTube sentiments?</h2>
+            <p>Join thousands of content creators using SentiTube to understand their audience better</p>
+            {% if not session.user_id %}
+                <a href="{{ url_for('signup') }}" class="btn btn-secondary btn-large">Get Started Free</a>
+            {% else %}
+                <a href="{{ url_for('predict') }}" class="btn btn-secondary btn-large">Start Analyzing</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

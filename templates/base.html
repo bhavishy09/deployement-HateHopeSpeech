@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}YouTube Sentiment Analyzer{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="{{ url_for('views.home') }}" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon-wrapper">
+                        <svg class="logo-svg" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="18" cy="18" r="16" fill="url(#gradient1)" opacity="0.2"/>
+                            <path d="M18 8C12.48 8 8 12.48 8 18C8 23.52 12.48 28 18 28C23.52 28 28 23.52 28 18C28 12.48 23.52 8 18 8ZM18 26C13.59 26 10 22.41 10 18C10 13.59 13.59 10 18 10C22.41 10 26 13.59 26 18C26 22.41 22.41 26 18 26Z" fill="url(#gradient2)"/>
+                            <path d="M15 14H17V20H15V14Z" fill="url(#gradient2)"/>
+                            <path d="M19 16H21V20H19V16Z" fill="url(#gradient2)"/>
+                            <path d="M23 12H25V20H23V12Z" fill="url(#gradient2)"/>
+                            <defs>
+                                <linearGradient id="gradient1" x1="2" y1="2" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#4a90a4"/>
+                                    <stop offset="1" stop-color="#e85d75"/>
+                                </linearGradient>
+                                <linearGradient id="gradient2" x1="8" y1="8" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#4a90a4"/>
+                                    <stop offset="1" stop-color="#e85d75"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <span class="logo-text">
+                        <span class="logo-comment">Tube</span><span class="logo-iq">Insights</span>
+                    </span>
+                </a>
+            </div>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('views.home') }}" class="nav-link {% if request.endpoint == 'views.home' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('predict') }}" class="nav-link {% if request.endpoint == 'predict' %}active{% endif %}">Predict</a></li>
+                <li><a href="{{ url_for('chatbot_page') }}" class="nav-link {% if request.endpoint == 'chatbot_page' %}active{% endif %}">Chatbot</a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="{{ url_for('youtube_tracker') }}" class="nav-link {% if request.endpoint == 'youtube_tracker' %}active{% endif %}">YT Tracker</a></li>
+                <li><a href="{{ url_for('views.about') }}" class="nav-link {% if request.endpoint == 'views.about' %}active{% endif %}">About Us</a></li>
+                
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                </li>
+                
+                {% if session.user_id %}
+                    <li><a href="{{ url_for('logout') }}" class="nav-link nav-btn">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="nav-link {% if request.endpoint == 'login' %}active{% endif %}">Login</a></li>
+                    <li><a href="{{ url_for('signup') }}" class="nav-link nav-btn {% if request.endpoint == 'signup' %}active{% endif %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        {{ message }}
+                        <span class="flash-close">&times;</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3 class="footer-logo">💡 TubeInsights</h3>
+                <p>Transform YouTube Analytics into Actionable Insights – Track Growth, Spot Hate, Highlight Hope!!</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ url_for('views.home') }}">Home</a></li>
+                    <li><a href="{{ url_for('views.about') }}">About Us</a></li>
+                    <li><a href="{{ url_for('predict') }}">Predict</a></li>
+                </ul>
+            </div>
+            
+            
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: 23103056@mail.jiit.ac.in</p>
+              
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 TubeInsights. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

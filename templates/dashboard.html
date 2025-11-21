@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - YouTube Sentiment Analyzer{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <h1 class="page-title fade-in">Your Dashboard</h1>
+        <p class="page-subtitle fade-in">Track your sentiment analysis history and insights</p>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card fade-in">
+                <h3>Sentiment Distribution</h3>
+                <canvas id="sentimentChart"></canvas>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: var(--positive-color);"></span>
+                        <span>Positive: {{ sentiment_data.Positive }}</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: var(--neutral-color);"></span>
+                        <span>Neutral: {{ sentiment_data.Neutral }}</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: var(--negative-color);"></span>
+                        <span>Negative: {{ sentiment_data.Negative }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-card stats-card fade-in">
+                <h3>Quick Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ predictions|length }}</div>
+                        <div class="stat-label">Total Predictions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ sentiment_data.Positive }}</div>
+                        <div class="stat-label">Positive</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ sentiment_data.Neutral }}</div>
+                        <div class="stat-label">Neutral</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ sentiment_data.Negative }}</div>
+                        <div class="stat-label">Negative</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card fade-in">
+            <h3>Prediction History</h3>
+            {% if predictions %}
+            <div class="table-responsive">
+                <table class="predictions-table">
+                    <thead>
+                        <tr>
+                            <th>Video ID</th>
+                            <th>Sentiment</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prediction in predictions %}
+                        <tr>
+                            <td>{{ prediction.video_id }}</td>
+                            <td>
+                                <span class="sentiment-badge sentiment-badge-{{ prediction.sentiment.lower() }}">
+                                    {{ prediction.sentiment }}
+                                </span>
+                            </td>
+                            <td>{{ prediction.timestamp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="no-data">No predictions yet. <a href="{{ url_for('predict') }}">Make your first prediction!</a></p>
+            {% endif %}
+        </div>
+
+        {% if tracker_history %}
+        <div class="dashboard-card fade-in">
+            <h3>Tracker History</h3>
+            <div class="tracker-history-grid">
+                {% for item in tracker_history %}
+                <div class="tracker-history-item">
+                    <h4>{{ item.video_id }}</h4>
+                    <small>{{ item.timestamp }}</small>
+                    <div class="plot-images">
+                        {% if item.views_plot_path %}
+                        <img src="{{ url_for('static', filename=item.views_plot_path) }}" alt="Views Plot">
+                        {% endif %}
+                        {% if item.likes_plot_path %}
+                        <img src="{{ url_for('static', filename=item.likes_plot_path) }}" alt="Likes Plot">
+                        {% endif %}
+                        {% if item.subscribers_plot_path %}
+                        <img src="{{ url_for('static', filename=item.subscribers_plot_path) }}" alt="Subscribers Plot">
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const sentimentData = {
+        positive: {{ sentiment_data.Positive }},
+        neutral: {{ sentiment_data.Neutral }},
+        negative: {{ sentiment_data.Negative }}
+    };
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

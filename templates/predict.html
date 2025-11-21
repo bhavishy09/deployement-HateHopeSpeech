@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Predict - YouTube Sentiment Analyzer{% endblock %}
+
+{% block content %}
+<section class="predict-section">
+    <div class="container">
+        <h1 class="page-title fade-in">Sentiment Prediction</h1>
+        <p class="page-subtitle fade-in">Enter a YouTube video ID to analyze comment sentiment</p>
+        
+        <div class="predict-layout">
+            <div class="predict-main-area">
+                <div class="predict-card fade-in">
+                    <h3>Enter Video ID</h3>
+                    <form method="POST" action="{{ url_for('predict') }}" class="predict-form">
+                        <div class="form-group">
+                            <label for="video_id">YouTube Video ID</label>
+                            <input type="text" id="video_id" name="video_id" required 
+                                   placeholder="e.g., dQw4w9WgXcQ"
+                                   pattern="[a-zA-Z0-9_-]+"
+                                   title="Enter a valid YouTube video ID">
+                            <small>Example: For https://youtube.com/watch?v=dQw4w9WgXcQ, enter "dQw4w9WgXcQ"</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">Analyze Sentiment</button>
+                    </form>
+                </div>
+                
+                <div class="prediction-output-area">
+                    {% if latest_prediction %}
+                    <div class="result-card fade-in">
+                        <h3>Analysis Complete</h3>
+                        <div class="result-content">
+                            <div class="result-video-info">
+                                <span class="result-label">Video ID:</span>
+                                <span class="result-value">{{ latest_prediction.video_id }}</span>
+                            </div>
+                            <div class="sentiment-result">
+                                <span class="result-label">Overall Sentiment:</span>
+                                <div class="sentiment-badge sentiment-badge-{{ latest_prediction.sentiment.lower() }}">
+                                    {{ latest_prediction.sentiment }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="analysis-details">
+                                <p>Based on <strong>{{ latest_prediction.comments_processed }}</strong> comments analyzed:</p>
+                                <div class="sentiment-breakdown">
+                                    <div class="sentiment-count hope">
+                                        <span class="count-label">Hope Comments:</span>
+                                        <span class="count-value">{{ latest_prediction.hope_count }}</span>
+                                    </div>
+                                    <div class="sentiment-count hate">
+                                        <span class="count-label">Hate Comments:</span>
+                                        <span class="count-value">{{ latest_prediction.hate_count }}</span>
+                                    </div>
+                                </div>
+                                {% if latest_prediction.comments_processed > 0 %}
+                                <div class="sentiment-ratio-bar">
+                                    {% set hope_percentage = (latest_prediction.hope_count / latest_prediction.comments_processed) * 100 %}
+                                    <div class="ratio-hope" style="width: {{ hope_percentage }}%;">
+                                        <span class="ratio-label">Hope</span>
+                                    </div>
+                                    <div class="ratio-hate" style="width: {{ 100 - hope_percentage }}%;">
+                                        <span class="ratio-label">Hate</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if latest_prediction.hope_comments %}
+                            <div class="comments-list-section">
+                                <h4>Hope Comments</h4>
+                                <div class="comments-list">
+                                    {% for comment in latest_prediction.hope_comments %}
+                                    <div class="comment-item hope">{{ comment }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if latest_prediction.hate_comments %}
+                            <div class="comments-list-section">
+                                <h4>Hate Comments</h4>
+                                <div class="comments-list">
+                                    {% for comment in latest_prediction.hate_comments %}
+                                    <div class="comment-item hate">{{ comment }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if show_chatbot_suggestion %}
+                    <div class="chatbot-suggestion-card fade-in">
+                        <h4>Need Help with Negative Feedback?</h4>
+                        <p>Our AI assistant can provide insights and strategies for managing negative comments and improving your content.</p>
+                        <a href="{{ url_for('chatbot_page', video_id=latest_prediction.video_id, hope_count=latest_prediction.hope_count, hate_count=latest_prediction.hate_count) }}" class="btn btn-secondary">
+                            Ask the Assistant
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="empty-result-placeholder">
+                        <div class="placeholder-icon">📊</div>
+                        <p>Your prediction results will appear here</p>
+                        <small>Enter a YouTube video ID above and click "Analyze Sentiment"</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="chatbot-sidebar">
+                <div class="chatbot-rectangle">
+                    <div class="chatbot-header-rect">
+                        <h4>🤖 Assistant</h4>
+                    </div>
+                    <div class="chatbot-messages-rect" id="chatbotMessagesRect">
+                        <!-- Messages will be dynamically inserted here by JavaScript -->
+                    </div>
+                    <div class="chatbot-input-rect">
+                         <input type="text" id="chatInputRect" placeholder="Ask the assistant...">
+                         <button id="chatSendBtnRect">➤</button>
+                    </div>
+                    <div class="chatbot-quick-actions-rect" id="quickActionsRect">
+                        <!-- Quick actions will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if recent_predictions %}
+        <div class="recent-predictions fade-in">
+            <h3>Recent Predictions</h3>
+            <div class="predictions-list">
+                {% for prediction in recent_predictions %}
+                <div class="prediction-item">
+                    <span class="prediction-video">📹 {{ prediction.video_id }}</span>
+                    <span class="sentiment-badge sentiment-badge-{{ prediction.sentiment.lower() }}">
+                        {{ prediction.sentiment }}
+                    </span>
+                    <span class="prediction-time">{{ prediction.timestamp }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}
+{% endblock %}
