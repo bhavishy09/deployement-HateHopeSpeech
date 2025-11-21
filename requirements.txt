@@ -13,3 +13,4 @@ python-dotenv
 scikit-learn
 pydantic
 pytz
+gunicorn
