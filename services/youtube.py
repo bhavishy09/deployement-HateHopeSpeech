@@ -45,11 +45,11 @@ def contains_text(text):
 
 def extract_video_id(video_input):
     """Extracts YouTube video ID from a URL or ID string."""
-    match = re.search(r"(?:v=|youtu\.be/|embed/|watch\?v=)([A-Za-z0-9_-]{11})", video_input)
+    match = re.search(r"(?:v=|youtu\.be/|embed/|watch\?v=)([A-Za-z0-9_-]+)", video_input)
     if match:
         return match.group(1)
     # Assume it's already an ID if no match
-    return video_input
+    return video_input.strip()
 
 # 3. Main Analysis Function
 def analyze_youtube_comments(video_id):
