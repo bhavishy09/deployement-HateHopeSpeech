@@ -258,5 +258,9 @@ def chating(prompt):
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5005)
+import os
+
+if __name__ == "__main__":
+    # Use the port assigned by Render, or default to 10000 locally
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
