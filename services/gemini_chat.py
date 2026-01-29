@@ -1,14 +1,8 @@
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
-
-api_key = os.environ.get("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("Missing GEMINI_API_KEY environment variable!")
-
-genai.configure(api_key=api_key)
 
 SYSTEM_PROMPT = """
 You are a Content Creator Assistant specializing in YouTube growth and content strategy. Your role is to provide actionable, personalized advice to help YouTubers succeed.
@@ -75,9 +69,29 @@ Remember: Your goal is to be the assistant they actually want to talk to—helpf
 """
 
 MODEL_NAME = "gemini-2.5-flash"
-model = genai.GenerativeModel(MODEL_NAME)
 
-def chatbot(prompt :str) -> str :
-    response = model.generate_content(SYSTEM_PROMPT+prompt)
-    print(response.text)
-    return response.text
+def get_client():
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("Warning: GEMINI_API_KEY environment variable is missing.")
+        return None
+    return genai.Client(api_key=api_key)
+
+def chatbot(prompt: str) -> str:
+    client = get_client()
+    if not client:
+        return "Service temporarily unavailable: Missing API Key. Please contact the administrator."
+    
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=SYSTEM_PROMPT + "\n" + prompt
+        )
+        if response.text:
+            print(response.text)
+            return response.text
+        else:
+            return "I'm sorry, I couldn't generate a response."
+    except Exception as e:
+        print(f"Error calling Gemini API: {e}")
+        return f"I encountered an error: {str(e)}"
