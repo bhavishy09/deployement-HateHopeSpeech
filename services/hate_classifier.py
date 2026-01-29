@@ -25,38 +25,45 @@ HOPE_LABELS = {"joy", "love", "surprise"}
 model = None
 tokenizer = None
 
-try:
- 
-    if not os.path.isfile(MODEL_PATH):
-        raise OSError(f"Model file not found at '{MODEL_PATH}'")
+def load_model():
+    """
+    Lazy loads the model and tokenizer if they haven't been loaded yet.
+    """
+    global model, tokenizer
+    if model is not None and tokenizer is not None:
+        return
+
+    print("⏳ Loading model and tokenizer...")
+    try:
+        if not os.path.isfile(MODEL_PATH):
+            raise OSError(f"Model file not found at '{MODEL_PATH}'")
+            
+        with open(MODEL_PATH, 'rb') as f:
+            loaded_data = pickle.load(f)
         
-    with open(MODEL_PATH, 'rb') as f:
-        loaded_data = pickle.load(f)
-    
-    
-    if isinstance(loaded_data, dict) and 'model' in loaded_data:
-        model = loaded_data['model']
-        print("✅ Model loaded from .pkl file dictionary.")
-    else:
-        model = loaded_data 
-        print("✅ Model loaded from .pkl file (standalone).")
+        if isinstance(loaded_data, dict) and 'model' in loaded_data:
+            model = loaded_data['model']
+            print("✅ Model loaded from .pkl file dictionary.")
+        else:
+            model = loaded_data 
+            print("✅ Model loaded from .pkl file (standalone).")
 
+        if model and "transformers" in str(type(model)):
+            tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+            print("✅ Hugging Face tokenizer loaded for DistilBert model.")
 
-    if model and "transformers" in str(type(model)):
-        tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-        print("✅ Hugging Face tokenizer loaded for DistilBert model.")
-
-except Exception as e:
-    print(f"❌ Error loading model or tokenizer: {e}")
-    model = None
-    tokenizer = None
-
-
+    except Exception as e:
+        print(f"❌ Error loading model or tokenizer: {e}")
+        model = None
+        tokenizer = None
 
 def predict_hope_hate(text):
     """
     Analyzes text to classify its emotion and determine if it's Hope or Hate speech.
     """
+    # Ensure model is loaded before prediction
+    load_model()
+
     if not model or not tokenizer:
         print("❌ Model or tokenizer is not loaded. Cannot perform prediction.")
         return {"text": text, "hope_hate": "Unknown", "emotion": "unknown", "score": 0.0}
